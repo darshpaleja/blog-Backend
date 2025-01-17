@@ -19,7 +19,12 @@ app.use(express.json());
 app.use(cors())
 
 const mongoose = require('mongoose');
-mongoose.connect(process.env.DB_URL , { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DB_URL , { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true ,
+  serverSelectionTimeoutMS: 30000, 
+  socketTimeoutMS: 30000, 
+})
 .then(() => {
   console.log('connect');
 })
