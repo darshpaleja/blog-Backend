@@ -20,13 +20,20 @@ app.use(cors())
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DB_URL , { 
+<<<<<<< HEAD
   useNewUrlParser: true,
   useUnifiedTopology: true ,
   serverSelectionTimeoutMS: 30000, 
   socketTimeoutMS: 30000, 
+=======
+  // useNewUrlParser: true,
+  // useUnifiedTopology: true ,
+  // serverSelectionTimeoutMS: 30000, 
+  // socketTimeoutMS: 30000, 
+>>>>>>> b064e6b (reCAPTCHA impliment)
 })
 .then(() => {
-  console.log('connect');
+  console.log('connected to databasee');
 })
 .catch((err) => {
   console.log(err);

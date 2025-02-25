@@ -2,7 +2,7 @@ var userModel = require('../model/UsersSchema')
 var bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
 require('dotenv').config()
-
+const axios = require('axios')
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
@@ -206,42 +206,56 @@ async function sendWelcomeEmail(userEmail, name) {
 
 // Signup
 
-exports.createUser = async (req , res) => { 
+exports.createUser = async (req, res) => {
+  let data = req.body;
 
-    let data = req.body
+  try {
+    // ✅ Google reCAPTCHA verify karo (await ka use karo)
+    const SECRET_KEY = "6LfwiuIqAAAAAB1MWC-E6vlnuhB6S8woxPc-2YvE";
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${SECRET_KEY}&response=${data.reCAPTCHAValue}`;
 
-    try {
-        if(data.name === '' || data.email === '' || data.password === '')
-        throw new Error('All fields are required')
+    const response = await axios.post(verifyURL);
 
-        if(!data.email.includes('@gmail.com'))
-        throw new Error('Invalid Email')
-
-        let userData = await userModel.findOne({email : data.email})
-        if(userData) throw new Error('User Already Exists')
-
-        if(data.password.length < 8) 
-        throw new Error('Password must be at least 8 characters long')
-        
-
-        req.body.password = await bcrypt.hash(req.body.password , 10)
-        let newUser = await userModel.create(data)
-        
-        // Send welcome email
-        await sendWelcomeEmail(data.email, data.name);
-
-        res.status(200).json({
-            status : 'Success' , 
-            Message : 'User Created Successfully' , 
-            Data : newUser
-        })
-    } catch (error) {
-        res.status(404).json({
-            status : 'Fail' , 
-            Message : error.message
-        })
+    if (!response.data.success) {
+      throw new Error("You are not a human");
     }
-}
+
+    // ✅ Form validation
+    if (!data.name || !data.email || !data.password)
+      throw new Error("All fields are required");
+
+    if (!data.email.includes("@gmail.com"))
+      throw new Error("Invalid Email");
+
+    let userData = await userModel.findOne({ email: data.email });
+    if (userData) throw new Error("User Already Exists");
+
+    if (data.password.length < 8)
+      throw new Error("Password must be at least 8 characters long");
+
+    // ✅ Password Hashing
+    req.body.password = await bcrypt.hash(req.body.password, 10);
+    let newUser = await userModel.create(data);
+
+    // ✅ Welcome Email (Agar required ho)
+    await sendWelcomeEmail(data.email, data.name);
+
+    // ✅ Success Response
+    res.status(200).json({
+      status: "Success",
+      Message: "User Created Successfully",
+      Data: newUser,
+    });
+
+  } catch (error) {
+    // ✅ Error Handling
+    console.error(error, "Error from backend");
+    res.status(400).json({
+      status: "Fail",
+      Message: error.message,
+    });
+  }
+};
 
 exports.getUser = async (req , res) => {
 
@@ -304,7 +318,7 @@ exports.loginUser = async (req , res) => {
             token
         })
         
-    } catch (error) {
+    } catch (error) { n0
         res.status(404).json({
             status : 'Fail' , 
             Message : error.message
