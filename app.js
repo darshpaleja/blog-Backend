@@ -16,21 +16,12 @@ var likeRouter = require('./routes/likeRoutes')
 
 var app = express();
 app.use(express.json());
-app.use(cors())
+app.use(cors({ origin: "*" }));
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DB_URL , { 
-<<<<<<< HEAD
   useNewUrlParser: true,
-  useUnifiedTopology: true ,
-  serverSelectionTimeoutMS: 30000, 
-  socketTimeoutMS: 30000, 
-=======
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true ,
-  // serverSelectionTimeoutMS: 30000, 
-  // socketTimeoutMS: 30000, 
->>>>>>> b064e6b (reCAPTCHA impliment)
+  useUnifiedTopology: true,
 })
 .then(() => {
   console.log('connected to databasee');

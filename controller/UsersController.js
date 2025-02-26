@@ -300,7 +300,7 @@ exports.loginUser = async (req , res) => {
 
     try {
 
-        if(req.body.email === '' || req.body.password === '')
+        if(req.body.email === '' || req.body.password === '') 
         throw new Error('All fields are required')
 
         let loginData = await userModel.findOne({email : req.body.email})
@@ -318,7 +318,7 @@ exports.loginUser = async (req , res) => {
             token
         })
         
-    } catch (error) { n0
+    } catch (error) { 
         res.status(404).json({
             status : 'Fail' , 
             Message : error.message
